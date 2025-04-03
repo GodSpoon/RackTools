@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RackTools - UPS Calculator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-800 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold">RackTools</h1>
+            <p class="mt-2 text-blue-100">Essential utilities for datacenter and network planning</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-4 py-3">
+                <a href="index.html" class="text-gray-600 hover:text-blue-600 transition">Home</a>
+                <span class="text-gray-300">/</span>
+                <span class="text-blue-600 font-medium">UPS Calculator</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">UPS Runtime Calculator</h2>
+            <p class="text-gray-600 mb-6">Calculate how long your UPS or battery will power your devices under various load conditions.</p>
+
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-medium text-gray-800 mb-4">UPS/Battery Specifications</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                    <div>
+                        <label for="batteryRating" class="block text-sm font-medium text-gray-700 mb-1">Battery/UPS Rating</label>
+                        <div class="flex">
+                            <input type="number" id="batteryRating" class="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Enter rating value" min="1">
+                            <select id="ratingType" class="rounded-r-md border-l-0 border-gray-300 bg-gray-50 py-2 px-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                <option value="VA">VA (Volt-Ampere)</option>
+                                <option value="Ah">Ah (Amp-hour)</option>
+                                <option value="mAh">mAh (Milliamp-hour)</option>
+                            </select>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Found on your UPS or battery specifications</p>
+                    </div>
+
+                    <div id="voltageField" class="hidden">
+                        <label for="batteryVoltage" class="block text-sm font-medium text-gray-700 mb-1">Battery Voltage (V)</label>
+                        <input type="number" id="batteryVoltage" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="12V, 24V, etc." min="1">
+                        <p class="mt-1 text-xs text-gray-500">Required for Ah/mAh ratings</p>
+                    </div>
+
+                    <div>
+                        <label for="efficiency" class="block text-sm font-medium text-gray-700 mb-1">UPS Efficiency (%)</label>
+                        <input type="number" id="efficiency" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="80" min="1" max="100">
+                        <p class="mt-1 text-xs text-gray-500">Typically 80-95% for modern UPS systems</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-800">Devices & Power Draw</h3>
+                    <button id="addDeviceBtn" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Add Device
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Max Power (W)</th>
+                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Power (W)</th>
+                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Idle Power (W)</th>
+                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Initial empty row will be added by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Estimated Runtime</h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Total Power Consumption</h4>
+                            <div class="grid grid-cols-3 gap-4 mt-2">
+                                <div class="bg-gray-50 rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-500">Max Load</span>
+                                    <span id="totalMaxPower" class="block text-lg font-semibold text-gray-800">0 W</span>
+                                </div>
+                                <div class="bg-gray-50 rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-500">Avg Load</span>
+                                    <span id="totalAvgPower" class="block text-lg font-semibold text-gray-800">0 W</span>
+                                </div>
+                                <div class="bg-gray-50 rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-500">Idle Load</span>
+                                    <span id="totalIdlePower" class="block text-lg font-semibold text-gray-800">0 W</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Estimated Runtime</h4>
+                            <div class="grid grid-cols-3 gap-4 mt-2">
+                                <div class="bg-red-50 rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-500">At Max Load</span>
+                                    <span id="maxRuntime" class="block text-lg font-semibold text-gray-800">-- min</span>
+                                </div>
+                                <div class="bg-yellow-50 rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-500">At Avg Load</span>
+                                    <span id="avgRuntime" class="block text-lg font-semibold text-gray-800">-- min</span>
+                                </div>
+                                <div class="bg-green-50 rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-500">At Idle Load</span>
+                                    <span id="idleRuntime" class="block text-lg font-semibold text-gray-800">-- min</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Power Consumption Chart</h3>
+                    <div class="h-64">
+                        <canvas id="powerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 mt-8">
+        <div class="container mx-auto px-4">
+            <p class="text-center text-gray-400">© 2025 RackTools by <a href="https://github.com/GodSpoon" class="text-blue-300 hover:text-blue-200 transition">GodSpoon</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize variables
+        let devices = [];
+        let powerChart = null;
+
+        // DOM elements
+        const ratingTypeSelect = document.getElementById('ratingType');
+        const voltageField = document.getElementById('voltageField');
+        const batteryRating = document.getElementById('batteryRating');
+        const batteryVoltage = document.getElementById('batteryVoltage');
+        const efficiency = document.getElementById('efficiency');
+        const addDeviceBtn = document.getElementById('addDeviceBtn');
+        const deviceTableBody = document.getElementById('deviceTableBody');
+
+        // Chart configuration
+        const chartConfig = {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Max Power (W)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderWidth: 1,
+                        data: []
+                    },
+                    {
+                        label: 'Avg Power (W)',
+                        backgroundColor: 'rgba(245, 158, 11, 0.5)',
+                        borderColor: 'rgb(245, 158, 11)',
+                        borderWidth: 1,
+                        data: []
+                    },
+                    {
+                        label: 'Idle Power (W)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        borderWidth: 1,
+                        data: []
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Power (Watts)'
+                        }
+                    }
+                }
+            }
+        };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Rating type event listener
+            ratingTypeSelect.addEventListener('change', handleRatingTypeChange);
+
+            // Add first device row
+            addDeviceRow();
+
+            // Add device button
+            addDeviceBtn.addEventListener('click', addDeviceRow);
+
+            // Initialize calculation events
+            [batteryRating, batteryVoltage, efficiency].forEach(el => {
+                el.addEventListener('input', calculateRuntime);
+            });
+
+            // Initialize power chart
+            const ctx = document.getElementById('powerChart').getContext('2d');
+            powerChart = new Chart(ctx, chartConfig);
+
+            // Initial rating type check
+            handleRatingTypeChange();
+        });
+
+        // Handle rating type change
+        function handleRatingTypeChange() {
+            const ratingType = ratingTypeSelect.value;
+
+            // Show voltage field for Ah and mAh
+            if (ratingType === 'Ah' || ratingType === 'mAh') {
+                voltageField.classList.remove('hidden');
+            } else {
+                voltageField.classList.add('hidden');
+            }
+
+            calculateRuntime();
+        }
+
+        // Add a new device row to the table
+        function addDeviceRow() {
+            const rowId = Date.now().toString();
+            const tr = document.createElement('tr');
+            tr.dataset.id = rowId;
+
+            tr.innerHTML = `
+                <td class="px-6 py-2">
+                    <input type="text" class="device-name block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Device name">
+                </td>
+                <td class="px-6 py-2">
+                    <input type="text" class="device-notes block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Notes">
+                </td>
+                <td class="px-3 py-2">
+                    <input type="number" class="device-max block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Max W" min="0" step="0.1">
+                </td>
+                <td class="px-3 py-2">
+                    <input type="number" class="device-avg block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Avg W" min="0" step="0.1">
+                </td>
+                <td class="px-3 py-2">
+                    <input type="number" class="device-idle block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Idle W" min="0" step="0.1">
+                </td>
+                <td class="px-3 py-2">
+                    <button type="button" class="delete-btn inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </td>
+            `;
+
+            deviceTableBody.appendChild(tr);
+
+            // Add input event listeners to calculate runtime
+            tr.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', () => {
+                    updateDeviceData();
+                    calculateRuntime();
+                });
+            });
+
+            // Add delete button event listener
+            tr.querySelector('.delete-btn').addEventListener('click', function() {
+                // Prevent deleting the last row
+                if (deviceTableBody.children.length > 1) {
+                    tr.remove();
+                    updateDeviceData();
+                    calculateRuntime();
+                }
+            });
+
+            // Initialize device data
+            updateDeviceData();
+        }
+
+        // Update the devices array from table data
+        function updateDeviceData() {
+            devices = [];
+
+            // Process each device row
+            deviceTableBody.querySelectorAll('tr').forEach(row => {
+                const nameEl = row.querySelector('.device-name');
+                const notesEl = row.querySelector('.device-notes');
+                const maxEl = row.querySelector('.device-max');
+                const avgEl = row.querySelector('.device-avg');
+                const idleEl = row.querySelector('.device-idle');
+
+                const maxW = maxEl.value ? parseFloat(maxEl.value) : 0;
+                const avgW = avgEl.value ? parseFloat(avgEl.value) : 0;
+                const idleW = idleEl.value ? parseFloat(idleEl.value) : 0;
+
+                // Only add if at least one power value is provided
+                if (maxW > 0 || avgW > 0 || idleW > 0) {
+                    devices.push({
+                        id: row.dataset.id,
+                        name: nameEl.value || `Device ${devices.length + 1}`,
+                        notes: notesEl.value || '',
+                        maxPower: maxW,
+                        avgPower: avgW,
+                        idlePower: idleW
+                    });
+                }
+            });
+
+            // Update chart
+            updatePowerChart();
+        }
+
+        // Calculate runtime based on UPS/battery specs and device power
+        function calculateRuntime() {
+            // Get UPS/battery specs
+            const ratingType = ratingTypeSelect.value;
+            const rating = batteryRating.value ? parseFloat(batteryRating.value) : 0;
+            const voltage = batteryVoltage.value ? parseFloat(batteryVoltage.value) : 0;
+            const eff = efficiency.value ? parseFloat(efficiency.value) / 100 : 0.8; // Default to 80% if not set
+
+            // Calculate total power consumption
+            const totalMaxPower = devices.reduce((sum, device) => sum + device.maxPower, 0);
+            const totalAvgPower = devices.reduce((sum, device) => sum + (device.avgPower || device.maxPower || device.idlePower), 0);
+            const totalIdlePower = devices.reduce((sum, device) => sum + (device.idlePower || device.avgPower || device.maxPower), 0);
+
+            // Update power display
+            document.getElementById('totalMaxPower').textContent = `${totalMaxPower.toFixed(1)} W`;
+            document.getElementById('totalAvgPower').textContent = `${totalAvgPower.toFixed(1)} W`;
+            document.getElementById('totalIdlePower').textContent = `${totalIdlePower.toFixed(1)} W`;
+
+            // Convert rating to watt-hours
+            let wattHours = 0;
+
+            if (rating > 0) {
+                if (ratingType === 'VA') {
+                    // VA to watt-hours (assumes power factor of 0.6 which is common for UPS ratings)
+                    wattHours = rating * 0.6;
+                } else if (ratingType === 'Ah' && voltage > 0) {
+                    // Ah to watt-hours
+                    wattHours = rating * voltage;
+                } else if (ratingType === 'mAh' && voltage > 0) {
+                    // mAh to watt-hours
+                    wattHours = (rating / 1000) * voltage;
+                }
+            }
+
+            // Calculate runtime in minutes with efficiency factor
+            let maxRuntime = totalMaxPower > 0 ? (wattHours * eff * 60) / totalMaxPower : 0;
+            let avgRuntime = totalAvgPower > 0 ? (wattHours * eff * 60) / totalAvgPower : 0;
+            let idleRuntime = totalIdlePower > 0 ? (wattHours * eff * 60) / totalIdlePower : 0;
+
+            // Update runtime display
+            document.getElementById('maxRuntime').textContent = maxRuntime > 0 ? formatTime(maxRuntime) : '-- min';
+            document.getElementById('avgRuntime').textContent = avgRuntime > 0 ? formatTime(avgRuntime) : '-- min';
+            document.getElementById('idleRuntime').textContent = idleRuntime > 0 ? formatTime(idleRuntime) : '-- min';
+        }
+
+        // Format minutes into hours and minutes
+        function formatTime(minutes) {
+            if (minutes < 60) {
+                return `${Math.round(minutes)} min`;
+            } else {
+                const hours = Math.floor(minutes / 60);
+                const mins = Math.round(minutes % 60);
+                return `${hours} hr ${mins} min`;
+            }
+        }
+
+        // Update power consumption chart
+        function updatePowerChart() {
+            // Prepare chart data
+            const labels = devices.map(d => d.name);
+            const maxData = devices.map(d => d.maxPower);
+            const avgData = devices.map(d => d.avgPower || 0);
+            const idleData = devices.map(d => d.idlePower || 0);
+
+            // Update chart data
+            powerChart.data.labels = labels;
+            powerChart.data.datasets[0].data = maxData;
+            powerChart.data.datasets[1].data = avgData;
+            powerChart.data.datasets[2].data = idleData;
+
+            // Update chart
+            powerChart.update();
+        }
+    </script>
+</body>
+</html>

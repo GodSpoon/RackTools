@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RackTools - Home</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #1b190f;
+            --white: #fafeff;
+            --grey: #474747;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--black);
+            color: var(--white);
+        }
+
+        .tool-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: var(--grey);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-gradient {
+            background: linear-gradient(90deg, #1b190f 0%, #474747 100%);
+        }
+
+        .logo-container {
+            height: 60px;
+        }
+
+        .placeholder-card {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <header class="header-gradient shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center">
+                <div class="logo-container mr-4">
+                    <img src="https://raw.githubusercontent.com/GodSpoon/spoonrip_branding/refs/heads/master/spoonrip_branding/logos/spoonrip.png" alt="SpoonRip Logo" class="h-full">
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-white">RackTools</h1>
+                    <p class="mt-1 text-gray-300">Next-gen infrastructure planning tools</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold mb-8 text-white">Available Tools</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <a href="ups-calculator.html" class="block">
+                    <div class="tool-card rounded-lg shadow-md overflow-hidden h-full border border-gray-700">
+                        <div class="p-6">
+                            <div class="flex items-center justify-center w-12 h-12 bg-black text-white rounded-full mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white mb-2">UPS Calculator</h3>
+                            <p class="text-gray-300">Calculate runtime for UPS and battery backup solutions based on your equipment power requirements.</p>
+                        </div>
+                        <div class="px-6 py-3 bg-black bg-opacity-30 border-t border-gray-700">
+                            <span class="inline-block text-white font-medium">Start calculating →</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Placeholder for future tools -->
+                <div class="tool-card placeholder-card rounded-lg shadow-md overflow-hidden h-full border border-gray-700">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center w-12 h-12 bg-black text-gray-400 rounded-full mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-400 mb-2">Coming Soon</h3>
+                        <p class="text-gray-500">More tools are coming soon. Check back later!</p>
+                    </div>
+                    <div class="px-6 py-3 bg-black bg-opacity-30 border-t border-gray-700">
+                        <span class="inline-block text-gray-400 font-medium">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-black py-6 mt-auto">
+        <div class="container mx-auto px-4">
+            <p class="text-center text-gray-500">© 2025 RackTools by <a href="https://github.com/GodSpoon" class="text-gray-400 hover:text-white transition">GodSpoon</a></p>
+        </div>
+    </footer>
+</body>
+</html>
