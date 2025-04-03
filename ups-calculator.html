@@ -5,134 +5,233 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RackTools - UPS Calculator</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --black: #1b190f;
+            --white: #fafeff;
+            --grey: #474747;
+            --light-grey: #aaaaaa;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--black);
+            color: var(--white);
+        }
+        
+        .header-gradient {
+            background: linear-gradient(90deg, #1b190f 0%, #474747 100%);
+        }
+        
+        .logo-container {
+            height: 60px;
+        }
+        
+        .card {
+            background-color: var(--grey);
+            border: 1px solid #333;
+        }
+        
+        .nav-item {
+            color: var(--white);
+        }
+        
+        .nav-item:hover {
+            color: var(--light-grey);
+        }
+        
+        .btn-primary {
+            background-color: var(--black);
+            color: var(--white);
+            border: 1px solid var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--white);
+            color: var(--black);
+        }
+        
+        .btn-danger {
+            background-color: #991b1b;
+            color: var(--white);
+        }
+        
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+        
+        .table-header {
+            background-color: var(--black);
+            color: var(--white);
+        }
+        
+        .table-row:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        input, select {
+            background-color: var(--black) !important;
+            color: var(--white) !important;
+            border-color: #666 !important;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--white) !important;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        .stat-card {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        .max-load {
+            background-color: rgba(220, 38, 38, 0.2);
+        }
+        
+        .avg-load {
+            background-color: rgba(245, 158, 11, 0.2);
+        }
+        
+        .idle-load {
+            background-color: rgba(16, 185, 129, 0.2);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-800 text-white shadow-lg">
+<body class="min-h-screen flex flex-col">
+    <header class="header-gradient shadow-lg">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold">RackTools</h1>
-            <p class="mt-2 text-blue-100">Essential utilities for datacenter and network planning</p>
+            <div class="flex items-center">
+                <div class="logo-container mr-4">
+                    <img src="https://raw.githubusercontent.com/GodSpoon/spoonrip_branding/refs/heads/master/spoonrip_branding/logos/spoonrip.png" alt="SpoonRip Logo" class="h-full">
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-white">RackTools</h1>
+                    <p class="mt-1 text-gray-300">Next-gen infrastructure planning tools</p>
+                </div>
+            </div>
         </div>
     </header>
 
-    <nav class="bg-white shadow-md">
+    <nav class="bg-black shadow-md">
         <div class="container mx-auto px-4">
             <div class="flex space-x-4 py-3">
-                <a href="index.html" class="text-gray-600 hover:text-blue-600 transition">Home</a>
-                <span class="text-gray-300">/</span>
-                <span class="text-blue-600 font-medium">UPS Calculator</span>
+                <a href="index.html" class="nav-item hover:text-gray-300 transition">Home</a>
+                <span class="text-gray-600">/</span>
+                <span class="text-white font-medium">UPS Calculator</span>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-8 flex-grow">
         <section class="mb-8">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">UPS Runtime Calculator</h2>
-            <p class="text-gray-600 mb-6">Calculate how long your UPS or battery will power your devices under various load conditions.</p>
-
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">UPS/Battery Specifications</h3>
-
+            <h2 class="text-2xl font-semibold mb-4">UPS Runtime Calculator</h2>
+            <p class="text-gray-300 mb-6">Calculate how long your UPS or battery will power your devices under various load conditions.</p>
+            
+            <div class="card rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-medium mb-4">UPS/Battery Specifications</h3>
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                     <div>
-                        <label for="batteryRating" class="block text-sm font-medium text-gray-700 mb-1">Battery/UPS Rating</label>
+                        <label for="batteryRating" class="block text-sm font-medium mb-1">Battery/UPS Rating</label>
                         <div class="flex">
-                            <input type="number" id="batteryRating" class="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Enter rating value" min="1">
-                            <select id="ratingType" class="rounded-r-md border-l-0 border-gray-300 bg-gray-50 py-2 px-3 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <input type="number" id="batteryRating" class="block w-full rounded-l-md border-gray-600 shadow-sm focus:border-white focus:ring-white sm:text-sm" placeholder="Enter rating value" min="1">
+                            <select id="ratingType" class="rounded-r-md border-l-0 border-gray-600 py-2 px-3 shadow-sm focus:border-white focus:ring-white sm:text-sm">
                                 <option value="VA">VA (Volt-Ampere)</option>
                                 <option value="Ah">Ah (Amp-hour)</option>
                                 <option value="mAh">mAh (Milliamp-hour)</option>
                             </select>
                         </div>
-                        <p class="mt-1 text-xs text-gray-500">Found on your UPS or battery specifications</p>
+                        <p class="mt-1 text-xs text-gray-400">Found on your UPS or battery specifications</p>
                     </div>
-
+                    
                     <div id="voltageField" class="hidden">
-                        <label for="batteryVoltage" class="block text-sm font-medium text-gray-700 mb-1">Battery Voltage (V)</label>
-                        <input type="number" id="batteryVoltage" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="12V, 24V, etc." min="1">
-                        <p class="mt-1 text-xs text-gray-500">Required for Ah/mAh ratings</p>
+                        <label for="batteryVoltage" class="block text-sm font-medium mb-1">Battery Voltage (V)</label>
+                        <input type="number" id="batteryVoltage" class="block w-full rounded-md border-gray-600 shadow-sm focus:border-white focus:ring-white sm:text-sm" placeholder="12V, 24V, etc." min="1">
+                        <p class="mt-1 text-xs text-gray-400">Required for Ah/mAh ratings</p>
                     </div>
-
+                    
                     <div>
-                        <label for="efficiency" class="block text-sm font-medium text-gray-700 mb-1">UPS Efficiency (%)</label>
-                        <input type="number" id="efficiency" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="80" min="1" max="100">
-                        <p class="mt-1 text-xs text-gray-500">Typically 80-95% for modern UPS systems</p>
+                        <label for="efficiency" class="block text-sm font-medium mb-1">UPS Efficiency (%)</label>
+                        <input type="number" id="efficiency" class="block w-full rounded-md border-gray-600 shadow-sm focus:border-white focus:ring-white sm:text-sm" value="80" min="1" max="100">
+                        <p class="mt-1 text-xs text-gray-400">Typically 80-95% for modern UPS systems</p>
                     </div>
                 </div>
             </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            
+            <div class="card rounded-lg shadow-md p-6 mb-8">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-gray-800">Devices & Power Draw</h3>
-                    <button id="addDeviceBtn" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <h3 class="text-lg font-medium">Devices & Power Draw</h3>
+                    <button id="addDeviceBtn" class="btn-primary inline-flex items-center px-3 py-2 border border-white text-sm leading-4 font-medium rounded-md shadow-sm hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition">
                         Add Device
                     </button>
                 </div>
-
+                
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="table-header">
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device Name</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
-                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Max Power (W)</th>
-                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Power (W)</th>
-                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Idle Power (W)</th>
-                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Device Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Notes</th>
+                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">Max Power (W)</th>
+                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">Avg Power (W)</th>
+                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">Idle Power (W)</th>
+                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="deviceTableBody" class="bg-white divide-y divide-gray-200">
+                        <tbody id="deviceTableBody" class="divide-y divide-gray-700">
                             <!-- Initial empty row will be added by JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </div>
-
+            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-medium text-gray-800 mb-4">Estimated Runtime</h3>
-
+                <div class="card rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium mb-4">Estimated Runtime</h3>
+                    
                     <div class="space-y-4">
                         <div>
-                            <h4 class="text-sm font-medium text-gray-700">Total Power Consumption</h4>
+                            <h4 class="text-sm font-medium">Total Power Consumption</h4>
                             <div class="grid grid-cols-3 gap-4 mt-2">
-                                <div class="bg-gray-50 rounded p-3 text-center">
-                                    <span class="block text-xs text-gray-500">Max Load</span>
-                                    <span id="totalMaxPower" class="block text-lg font-semibold text-gray-800">0 W</span>
+                                <div class="stat-card rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-300">Max Load</span>
+                                    <span id="totalMaxPower" class="block text-lg font-semibold">0 W</span>
                                 </div>
-                                <div class="bg-gray-50 rounded p-3 text-center">
-                                    <span class="block text-xs text-gray-500">Avg Load</span>
-                                    <span id="totalAvgPower" class="block text-lg font-semibold text-gray-800">0 W</span>
+                                <div class="stat-card rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-300">Avg Load</span>
+                                    <span id="totalAvgPower" class="block text-lg font-semibold">0 W</span>
                                 </div>
-                                <div class="bg-gray-50 rounded p-3 text-center">
-                                    <span class="block text-xs text-gray-500">Idle Load</span>
-                                    <span id="totalIdlePower" class="block text-lg font-semibold text-gray-800">0 W</span>
+                                <div class="stat-card rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-300">Idle Load</span>
+                                    <span id="totalIdlePower" class="block text-lg font-semibold">0 W</span>
                                 </div>
                             </div>
                         </div>
-
+                        
                         <div>
-                            <h4 class="text-sm font-medium text-gray-700">Estimated Runtime</h4>
+                            <h4 class="text-sm font-medium">Estimated Runtime</h4>
                             <div class="grid grid-cols-3 gap-4 mt-2">
-                                <div class="bg-red-50 rounded p-3 text-center">
-                                    <span class="block text-xs text-gray-500">At Max Load</span>
-                                    <span id="maxRuntime" class="block text-lg font-semibold text-gray-800">-- min</span>
+                                <div class="max-load rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-300">At Max Load</span>
+                                    <span id="maxRuntime" class="block text-lg font-semibold">-- min</span>
                                 </div>
-                                <div class="bg-yellow-50 rounded p-3 text-center">
-                                    <span class="block text-xs text-gray-500">At Avg Load</span>
-                                    <span id="avgRuntime" class="block text-lg font-semibold text-gray-800">-- min</span>
+                                <div class="avg-load rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-300">At Avg Load</span>
+                                    <span id="avgRuntime" class="block text-lg font-semibold">-- min</span>
                                 </div>
-                                <div class="bg-green-50 rounded p-3 text-center">
-                                    <span class="block text-xs text-gray-500">At Idle Load</span>
-                                    <span id="idleRuntime" class="block text-lg font-semibold text-gray-800">-- min</span>
+                                <div class="idle-load rounded p-3 text-center">
+                                    <span class="block text-xs text-gray-300">At Idle Load</span>
+                                    <span id="idleRuntime" class="block text-lg font-semibold">-- min</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-medium text-gray-800 mb-4">Power Consumption Chart</h3>
+                
+                <div class="card rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium mb-4">Power Consumption Chart</h3>
                     <div class="h-64">
                         <canvas id="powerChart"></canvas>
                     </div>
@@ -141,9 +240,9 @@
         </section>
     </main>
 
-    <footer class="bg-gray-800 text-white py-6 mt-8">
+    <footer class="bg-black py-6 mt-8">
         <div class="container mx-auto px-4">
-            <p class="text-center text-gray-400">© 2025 RackTools by <a href="https://github.com/GodSpoon" class="text-blue-300 hover:text-blue-200 transition">GodSpoon</a></p>
+            <p class="text-center text-gray-500">© 2025 RackTools by <a href="https://github.com/GodSpoon" class="text-gray-400 hover:text-white transition">GodSpoon</a></p>
         </div>
     </footer>
 
@@ -151,7 +250,7 @@
         // Initialize variables
         let devices = [];
         let powerChart = null;
-
+        
         // DOM elements
         const ratingTypeSelect = document.getElementById('ratingType');
         const voltageField = document.getElementById('voltageField');
@@ -160,8 +259,8 @@
         const efficiency = document.getElementById('efficiency');
         const addDeviceBtn = document.getElementById('addDeviceBtn');
         const deviceTableBody = document.getElementById('deviceTableBody');
-
-        // Chart configuration
+        
+        // Chart configuration with updated colors for the dark theme
         const chartConfig = {
             type: 'bar',
             data: {
@@ -169,8 +268,8 @@
                 datasets: [
                     {
                         label: 'Max Power (W)',
-                        backgroundColor: 'rgba(239, 68, 68, 0.5)',
-                        borderColor: 'rgb(239, 68, 68)',
+                        backgroundColor: 'rgba(220, 38, 38, 0.5)',
+                        borderColor: 'rgb(220, 38, 38)',
                         borderWidth: 1,
                         data: []
                     },
@@ -196,6 +295,9 @@
                 plugins: {
                     legend: {
                         position: 'top',
+                        labels: {
+                            color: '#fafeff'
+                        }
                     }
                 },
                 scales: {
@@ -203,84 +305,133 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Power (Watts)'
+                            text: 'Power (Watts)',
+                            color: '#fafeff'
+                        },
+                        ticks: {
+                            color: '#fafeff'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#fafeff'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
                         }
                     }
                 }
             }
         };
-
+        
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            // Rating type event listener
+            // Update runtime display
+            document.getElementById('maxRuntime').textContent = maxRuntime > 0 ? formatTime(maxRuntime) : '-- min';
+            document.getElementById('avgRuntime').textContent = avgRuntime > 0 ? formatTime(avgRuntime) : '-- min';
+            document.getElementById('idleRuntime').textContent = idleRuntime > 0 ? formatTime(idleRuntime) : '-- min';
+        }
+        
+        // Format minutes into hours and minutes
+        function formatTime(minutes) {
+            if (minutes < 60) {
+                return `${Math.round(minutes)} min`;
+            } else {
+                const hours = Math.floor(minutes / 60);
+                const mins = Math.round(minutes % 60);
+                return `${hours} hr ${mins} min`;
+            }
+        }
+        
+        // Update power consumption chart
+        function updatePowerChart() {
+            // Prepare chart data
+            const labels = devices.map(d => d.name);
+            const maxData = devices.map(d => d.maxPower);
+            const avgData = devices.map(d => d.avgPower || 0);
+            const idleData = devices.map(d => d.idlePower || 0);
+            
+            // Update chart data
+            powerChart.data.labels = labels;
+            powerChart.data.datasets[0].data = maxData;
+            powerChart.data.datasets[1].data = avgData;
+            powerChart.data.datasets[2].data = idleData;
+            
+            // Update chart
+            powerChart.update();
+        } Rating type event listener
             ratingTypeSelect.addEventListener('change', handleRatingTypeChange);
-
+            
             // Add first device row
             addDeviceRow();
-
+            
             // Add device button
             addDeviceBtn.addEventListener('click', addDeviceRow);
-
+            
             // Initialize calculation events
             [batteryRating, batteryVoltage, efficiency].forEach(el => {
                 el.addEventListener('input', calculateRuntime);
             });
-
+            
             // Initialize power chart
             const ctx = document.getElementById('powerChart').getContext('2d');
             powerChart = new Chart(ctx, chartConfig);
-
+            
             // Initial rating type check
             handleRatingTypeChange();
         });
-
+        
         // Handle rating type change
         function handleRatingTypeChange() {
             const ratingType = ratingTypeSelect.value;
-
+            
             // Show voltage field for Ah and mAh
             if (ratingType === 'Ah' || ratingType === 'mAh') {
                 voltageField.classList.remove('hidden');
             } else {
                 voltageField.classList.add('hidden');
             }
-
+            
             calculateRuntime();
         }
-
+        
         // Add a new device row to the table
         function addDeviceRow() {
             const rowId = Date.now().toString();
             const tr = document.createElement('tr');
             tr.dataset.id = rowId;
-
+            tr.className = 'table-row';
+            
             tr.innerHTML = `
                 <td class="px-6 py-2">
-                    <input type="text" class="device-name block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Device name">
+                    <input type="text" class="device-name block w-full border-gray-600 rounded-md shadow-sm focus:ring-white focus:border-white sm:text-sm" placeholder="Device name">
                 </td>
                 <td class="px-6 py-2">
-                    <input type="text" class="device-notes block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Notes">
+                    <input type="text" class="device-notes block w-full border-gray-600 rounded-md shadow-sm focus:ring-white focus:border-white sm:text-sm" placeholder="Notes">
                 </td>
                 <td class="px-3 py-2">
-                    <input type="number" class="device-max block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Max W" min="0" step="0.1">
+                    <input type="number" class="device-max block w-full border-gray-600 rounded-md shadow-sm focus:ring-white focus:border-white sm:text-sm" placeholder="Max W" min="0" step="0.1">
                 </td>
                 <td class="px-3 py-2">
-                    <input type="number" class="device-avg block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Avg W" min="0" step="0.1">
+                    <input type="number" class="device-avg block w-full border-gray-600 rounded-md shadow-sm focus:ring-white focus:border-white sm:text-sm" placeholder="Avg W" min="0" step="0.1">
                 </td>
                 <td class="px-3 py-2">
-                    <input type="number" class="device-idle block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Idle W" min="0" step="0.1">
+                    <input type="number" class="device-idle block w-full border-gray-600 rounded-md shadow-sm focus:ring-white focus:border-white sm:text-sm" placeholder="Idle W" min="0" step="0.1">
                 </td>
                 <td class="px-3 py-2">
-                    <button type="button" class="delete-btn inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <button type="button" class="delete-btn btn-danger inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </td>
             `;
-
+            
             deviceTableBody.appendChild(tr);
-
+            
             // Add input event listeners to calculate runtime
             tr.querySelectorAll('input').forEach(input => {
                 input.addEventListener('input', () => {
@@ -288,7 +439,7 @@
                     calculateRuntime();
                 });
             });
-
+            
             // Add delete button event listener
             tr.querySelector('.delete-btn').addEventListener('click', function() {
                 // Prevent deleting the last row
@@ -298,15 +449,15 @@
                     calculateRuntime();
                 }
             });
-
+            
             // Initialize device data
             updateDeviceData();
         }
-
+        
         // Update the devices array from table data
         function updateDeviceData() {
             devices = [];
-
+            
             // Process each device row
             deviceTableBody.querySelectorAll('tr').forEach(row => {
                 const nameEl = row.querySelector('.device-name');
@@ -314,11 +465,11 @@
                 const maxEl = row.querySelector('.device-max');
                 const avgEl = row.querySelector('.device-avg');
                 const idleEl = row.querySelector('.device-idle');
-
+                
                 const maxW = maxEl.value ? parseFloat(maxEl.value) : 0;
                 const avgW = avgEl.value ? parseFloat(avgEl.value) : 0;
                 const idleW = idleEl.value ? parseFloat(idleEl.value) : 0;
-
+                
                 // Only add if at least one power value is provided
                 if (maxW > 0 || avgW > 0 || idleW > 0) {
                     devices.push({
@@ -331,11 +482,11 @@
                     });
                 }
             });
-
+            
             // Update chart
             updatePowerChart();
         }
-
+        
         // Calculate runtime based on UPS/battery specs and device power
         function calculateRuntime() {
             // Get UPS/battery specs
@@ -343,20 +494,20 @@
             const rating = batteryRating.value ? parseFloat(batteryRating.value) : 0;
             const voltage = batteryVoltage.value ? parseFloat(batteryVoltage.value) : 0;
             const eff = efficiency.value ? parseFloat(efficiency.value) / 100 : 0.8; // Default to 80% if not set
-
+            
             // Calculate total power consumption
             const totalMaxPower = devices.reduce((sum, device) => sum + device.maxPower, 0);
             const totalAvgPower = devices.reduce((sum, device) => sum + (device.avgPower || device.maxPower || device.idlePower), 0);
             const totalIdlePower = devices.reduce((sum, device) => sum + (device.idlePower || device.avgPower || device.maxPower), 0);
-
+            
             // Update power display
             document.getElementById('totalMaxPower').textContent = `${totalMaxPower.toFixed(1)} W`;
             document.getElementById('totalAvgPower').textContent = `${totalAvgPower.toFixed(1)} W`;
             document.getElementById('totalIdlePower').textContent = `${totalIdlePower.toFixed(1)} W`;
-
+            
             // Convert rating to watt-hours
             let wattHours = 0;
-
+            
             if (rating > 0) {
                 if (ratingType === 'VA') {
                     // VA to watt-hours (assumes power factor of 0.6 which is common for UPS ratings)
@@ -369,46 +520,10 @@
                     wattHours = (rating / 1000) * voltage;
                 }
             }
-
+            
             // Calculate runtime in minutes with efficiency factor
             let maxRuntime = totalMaxPower > 0 ? (wattHours * eff * 60) / totalMaxPower : 0;
             let avgRuntime = totalAvgPower > 0 ? (wattHours * eff * 60) / totalAvgPower : 0;
             let idleRuntime = totalIdlePower > 0 ? (wattHours * eff * 60) / totalIdlePower : 0;
-
-            // Update runtime display
-            document.getElementById('maxRuntime').textContent = maxRuntime > 0 ? formatTime(maxRuntime) : '-- min';
-            document.getElementById('avgRuntime').textContent = avgRuntime > 0 ? formatTime(avgRuntime) : '-- min';
-            document.getElementById('idleRuntime').textContent = idleRuntime > 0 ? formatTime(idleRuntime) : '-- min';
-        }
-
-        // Format minutes into hours and minutes
-        function formatTime(minutes) {
-            if (minutes < 60) {
-                return `${Math.round(minutes)} min`;
-            } else {
-                const hours = Math.floor(minutes / 60);
-                const mins = Math.round(minutes % 60);
-                return `${hours} hr ${mins} min`;
-            }
-        }
-
-        // Update power consumption chart
-        function updatePowerChart() {
-            // Prepare chart data
-            const labels = devices.map(d => d.name);
-            const maxData = devices.map(d => d.maxPower);
-            const avgData = devices.map(d => d.avgPower || 0);
-            const idleData = devices.map(d => d.idlePower || 0);
-
-            // Update chart data
-            powerChart.data.labels = labels;
-            powerChart.data.datasets[0].data = maxData;
-            powerChart.data.datasets[1].data = avgData;
-            powerChart.data.datasets[2].data = idleData;
-
-            // Update chart
-            powerChart.update();
-        }
-    </script>
-</body>
-</html>
+            
+            //
